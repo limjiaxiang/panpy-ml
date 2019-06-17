@@ -21,9 +21,10 @@ class LinearRegression:
     # obtain parameters for model (thetas)
     def fit(self, train_x, train_y, scale_approach=None, method='gradient', gradient_args=None):
         if gradient_args is None:
-            gradient_args = dict(lr=0.01, epochs=100, batch_size=32)
+            gradient_args = dict(lr=0.01, epochs=1000, batch_size=32)
         self.train_x = train_x.values
         self.train_y = train_y.values
+        self.scale_approach = scale_approach
         if scale_approach:
             temp_x, self.scale_arrays, self.scale_approach = \
                 scale_matrix(scale_approach, self.train_x, prior_scale_arrays=False, return_scale_arrays=True)
@@ -41,9 +42,10 @@ class LinearRegression:
     def predict(self, x_vector):
         # multivariate linear regression
         x_vector_copy = np.copy(x_vector)
-        scaled_x_vector_copy = scale_matrix(self.scale_approach, x_vector_copy,
-                                            prior_scale_arrays=self.scale_arrays, return_scale_arrays=False)
-        x_vector_with_bias = np.insert(scaled_x_vector_copy, obj=0, values=1.0, axis=1)
+        if self.scale_approach:
+            x_vector_copy = scale_matrix(self.scale_approach, x_vector_copy,
+                                         prior_scale_arrays=self.scale_arrays, return_scale_arrays=False)
+        x_vector_with_bias = np.insert(x_vector_copy, obj=0, values=1.0, axis=1)
         return np.dot(x_vector_with_bias, self.params)
 
     # obtain linear regression parameters through normal equations (closed-form)
@@ -104,13 +106,12 @@ class SimpleLinear:
 
 if __name__ == '__main__':
     # Head Dimensions in Brothers (Multivariate)
-    frets = pd.read_csv('https://vincentarelbundock.github.io/Rdatasets/csv/boot/frets.csv')
-    x = frets.iloc[:, 1:-1]
-    y = frets.iloc[:, -1]
-
-    lr = LinearRegression()
-    lr.fit(x, y, scale_approach='mean', method='gradient', gradient_args={'epochs': 1000})
-    pred = lr.predict(x.values)
+    # frets = pd.read_csv('https://vincentarelbundock.github.io/Rdatasets/csv/boot/frets.csv')
+    # x = frets.iloc[:, 1:-1]
+    # y = frets.iloc[:, -1]
+    # lr = LinearRegression()
+    # lr.fit(x, y, scale_approach='mean', method='gradient', gradient_args={'epochs': 1000})
+    # pred = lr.predict(x.values)
 
     # # Example Data of Antille and May - for Simple Regression
     # exAM = pd.read_csv('https://vincentarelbundock.github.io/Rdatasets/csv/robustbase/exAM.csv')
@@ -119,4 +120,29 @@ if __name__ == '__main__':
     # lr = LinearRegression()
     # lr.simple_fit(x, y)
     # prediction = lr.simple_predict(x)
+
+    # Boston house dataset
+    from sklearn.model_selection import train_test_split
+    from sklearn import linear_model
+    from sklearn.datasets import load_boston
+
+    boston_dataset = load_boston()
+    boston = pd.DataFrame(boston_dataset.data, columns=boston_dataset.feature_names)
+    boston['MEDV'] = boston_dataset.target
+    features = ['LSTAT', 'RM']
+    target = boston['MEDV']
+
+    X = pd.DataFrame(np.c_[boston['LSTAT'], boston['RM']], columns=['LSTAT', 'RM'])
+    Y = boston['MEDV']
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=15)
+
+    # current module lr class
+    lr = LinearRegression()
+    lr.fit(X_train, Y_train, scale_approach='minmax', method='gradient')
+    lr_pred = lr.predict(X_test)
+    # sklearn lr class
+    sk_lr = linear_model.LinearRegression(fit_intercept=True, normalize=True)
+    sk_lr.fit(X_train, Y_train)
+    sk_pred = sk_lr.predict(X_test)
+
     print('hellO!')

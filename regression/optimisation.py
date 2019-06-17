@@ -1,11 +1,9 @@
-import sys
-
 import numpy as np
 
 
 class GradientDescent:
 
-    def __init__(self, cost_function, lr=0.01, epochs=100, batch_size=32, random_seed=None):
+    def __init__(self, cost_function, lr=0.01, epochs=1000, batch_size=32, random_seed=None):
         self.cost_function = cost_function
         self.learning_rate = lr
         self.epochs = epochs
@@ -41,6 +39,6 @@ class GradientDescent:
             batch_pred = np.dot(x_batch, self.params)
             batch_error = np.subtract(batch_pred, y_batch)
             update_vector = np.multiply((self.learning_rate / self.batch_size),
-                                        np.sum(np.dot(x_batch.T, batch_error)))
+                                        np.dot(x_batch.T, batch_error))
             self.params -= update_vector
 
