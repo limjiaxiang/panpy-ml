@@ -48,7 +48,7 @@ class LinearRegression:
         x_vector_with_bias = np.insert(x_vector_copy, obj=0, values=1.0, axis=1)
         return np.dot(x_vector_with_bias, self.params)
 
-    # obtain linear regression parameters through normal equations (closed-form)
+    # obtain linear regression parameters through normal equations (closed-form), a.k.a. OLS
     # https://www.geeksforgeeks.org/ml-normal-equation-in-linear-regression/
     # theta (params) = (X^2)^-1 * (X*y)
     def _normal_eqn(self, x, y):
@@ -138,7 +138,7 @@ if __name__ == '__main__':
 
     # current module lr class
     lr = LinearRegression()
-    lr.fit(X_train, Y_train, scale_approach='minmax', method='gradient')
+    lr.fit(X_train, Y_train, scale_approach='l2_norm', method='normal')
     lr_pred = lr.predict(X_test)
     # sklearn lr class
     sk_lr = linear_model.LinearRegression(fit_intercept=True, normalize=True)

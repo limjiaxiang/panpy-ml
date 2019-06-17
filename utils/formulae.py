@@ -30,3 +30,7 @@ def residual_error(actual_y_matrix, predicted_y_matrix):
 # Sum of squared residuals
 def rss(residual_vector):
     return np.sum(np.square(residual_vector), axis=0)
+
+
+def l2_norm(vector):
+    return np.sqrt(np.sum(np.square(vector)))
