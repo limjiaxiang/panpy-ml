@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+from utils.linear_global import linear_predict
 from utils.scaling import scale_matrix
 from utils.formulae import pearson_correlation
 from regression.optimisation import GradientDescent
@@ -20,6 +21,7 @@ class LinearRegression:
     # multivariate linear regression
     # obtain parameters for model (thetas)
     def fit(self, train_x, train_y, scale_approach=None, method='gradient', gradient_args=None):
+        # TODO ensure insertion logic passes, solution: create 1st column checker for bias placeholder value
         if gradient_args is None:
             gradient_args = dict(lr=0.01, epochs=1000, batch_size=32)
         self.train_x = train_x.values
@@ -35,18 +37,13 @@ class LinearRegression:
             self._normal_eqn(temp_x, self.train_y)
         # https://www.geeksforgeeks.org/gradient-descent-in-linear-regression/
         elif method == 'gradient':
-            gr = GradientDescent(self._lr_cost_function, random_seed=self.random_seed, **gradient_args)
+            gr = GradientDescent(self._cost_function, random_seed=self.random_seed, **gradient_args)
             gr.descent(x_matrix=temp_x, y_matrix=self.train_y)
             self.params = gr.params
 
     def predict(self, x_vector):
-        # multivariate linear regression
-        x_vector_copy = np.copy(x_vector)
-        if self.scale_approach:
-            x_vector_copy = scale_matrix(self.scale_approach, x_vector_copy,
-                                         prior_scale_arrays=self.scale_arrays, return_scale_arrays=False)
-        x_vector_with_bias = np.insert(x_vector_copy, obj=0, values=1.0, axis=1)
-        return np.dot(x_vector_with_bias, self.params)
+        return linear_predict(x_vector, self.params, scale_approach=self.scale_approach,
+                              prior_scale_arrays=self.scale_arrays)
 
     # obtain linear regression parameters through normal equations (closed-form), a.k.a. OLS
     # https://www.geeksforgeeks.org/ml-normal-equation-in-linear-regression/
@@ -57,7 +54,7 @@ class LinearRegression:
         self.params = np.dot(x_squared_inverse, x_y_product)
         print('Parameters obtained obtained from normal equation')
 
-    def _lr_cost_function(self, params, x_matrix, y_matrix, scale_x=True):
+    def _cost_function(self, params, x_matrix, y_matrix, scale_x=True):
         if scale_x:
             x_matrix = scale_matrix(self.scale_approach, x_matrix,
                                     prior_scale_arrays=self.scale_arrays, return_scale_arrays=False)

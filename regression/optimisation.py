@@ -4,6 +4,7 @@ import numpy as np
 class GradientDescent:
 
     def __init__(self, cost_function, lr=0.01, epochs=1000, batch_size=32, random_seed=None):
+        # TODO refactor gradient descent algo to take in model as input
         self.cost_function = cost_function
         self.learning_rate = lr
         self.epochs = epochs
@@ -26,6 +27,7 @@ class GradientDescent:
         total_examples = x_matrix.shape[0]
         curr_epoch = 0
         curr_batch_index = 0
+        # TODO add additional option for descent until convergence (change in gradient sign)
         while curr_epoch < self.epochs:
             if curr_batch_index + self.batch_size >= total_examples:
                 x_batch = x_matrix[curr_batch_index:]
