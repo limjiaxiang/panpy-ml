@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from utils.linear_global import linear_predict
+from utils.linear_global import linear_predict, check_bias_column
 from utils.scaling import scale_matrix
 from utils.formulae import pearson_correlation
 from regression.optimisation import GradientDescent
@@ -21,25 +21,24 @@ class LinearRegression:
     # multivariate linear regression
     # obtain parameters for model (thetas)
     def fit(self, train_x, train_y, scale_approach=None, method='gradient', gradient_args=None):
-        # TODO ensure insertion logic passes, solution: create 1st column checker for bias placeholder value
-        if gradient_args is None:
-            gradient_args = dict(lr=0.01, epochs=1000, batch_size=32)
         self.train_x = train_x.values
         self.train_y = train_y.values
         self.scale_approach = scale_approach
         if scale_approach:
             temp_x, self.scale_arrays, self.scale_approach = \
                 scale_matrix(scale_approach, self.train_x, prior_scale_arrays=False, return_scale_arrays=True)
-            temp_x = np.insert(temp_x, obj=0, values=1.0, axis=1)
         else:
-            temp_x = np.insert(self.train_x, obj=0, values=1.0, axis=1)
+            temp_x = self.train_x
+        temp_x = check_bias_column(temp_x)
         if method == 'normal':
             self._normal_eqn(temp_x, self.train_y)
         # https://www.geeksforgeeks.org/gradient-descent-in-linear-regression/
         elif method == 'gradient':
-            gr = GradientDescent(self._cost_function, random_seed=self.random_seed, **gradient_args)
+            if gradient_args:
+                gr = GradientDescent(self, random_seed=self.random_seed, **gradient_args)
+            else:
+                gr = GradientDescent(self, random_seed=self.random_seed)
             gr.descent(x_matrix=temp_x, y_matrix=self.train_y)
-            self.params = gr.params
 
     def predict(self, x_vector):
         return linear_predict(x_vector, self.params, scale_approach=self.scale_approach,
@@ -54,11 +53,11 @@ class LinearRegression:
         self.params = np.dot(x_squared_inverse, x_y_product)
         print('Parameters obtained obtained from normal equation')
 
-    def _cost_function(self, params, x_matrix, y_matrix, scale_x=True):
+    def cost_function(self, params, x_matrix, y_matrix, scale_x=True):
         if scale_x:
             x_matrix = scale_matrix(self.scale_approach, x_matrix,
                                     prior_scale_arrays=self.scale_arrays, return_scale_arrays=False)
-        scaled_x_matrix_w_bias = np.insert(x_matrix, obj=0, values=1.0, axis=1)
+        scaled_x_matrix_w_bias = check_bias_column(x_matrix)
         return (1/(2*scaled_x_matrix_w_bias.shape[0])) * \
                np.sum(np.square(np.subtract(np.dot(scaled_x_matrix_w_bias, params), y_matrix)), axis=0)
 
@@ -102,12 +101,14 @@ class SimpleLinear:
 
 
 if __name__ == '__main__':
+    RANDOM_SEED = 15
+
     # Head Dimensions in Brothers (Multivariate)
     # frets = pd.read_csv('https://vincentarelbundock.github.io/Rdatasets/csv/boot/frets.csv')
     # x = frets.iloc[:, 1:-1]
     # y = frets.iloc[:, -1]
     # lr = LinearRegression()
-    # lr.fit(x, y, scale_approach='mean', method='gradient', gradient_args={'epochs': 1000})
+    # lr.fit(x, y, scale_approach='mean', method='gradient')
     # pred = lr.predict(x.values)
 
     # # Example Data of Antille and May - for Simple Regression
@@ -122,20 +123,17 @@ if __name__ == '__main__':
     from sklearn.model_selection import train_test_split
     from sklearn import linear_model
     from sklearn.datasets import load_boston
-
     boston_dataset = load_boston()
     boston = pd.DataFrame(boston_dataset.data, columns=boston_dataset.feature_names)
     boston['MEDV'] = boston_dataset.target
     features = ['LSTAT', 'RM']
     target = boston['MEDV']
-
     X = pd.DataFrame(np.c_[boston['LSTAT'], boston['RM']], columns=['LSTAT', 'RM'])
     Y = boston['MEDV']
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=15)
-
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=RANDOM_SEED)
     # current module lr class
-    lr = LinearRegression()
-    lr.fit(X_train, Y_train, scale_approach='l2_norm', method='normal')
+    lr = LinearRegression(random_seed=RANDOM_SEED)
+    lr.fit(X_train, Y_train, scale_approach='l2_norm', method='gradient')
     lr_pred = lr.predict(X_test)
     # sklearn lr class
     sk_lr = linear_model.LinearRegression(fit_intercept=True, normalize=True)
