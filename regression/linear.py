@@ -10,7 +10,7 @@ from regression.optimisation import GradientDescent
 # Multivariate Linear Regression
 class LinearRegression:
 
-    def __init__(self, Lasso=False, Ridge=False, random_seed=None):
+    def __init__(self, Lasso=False, Ridge=False, l1_ratio=None, random_seed=None):
         self.train_x = None
         self.train_y = None
         self.params = None
@@ -21,8 +21,8 @@ class LinearRegression:
     # multivariate linear regression
     # obtain parameters for model (thetas)
     def fit(self, train_x, train_y, scale_approach=None, method='gradient', gradient_args=None):
-        self.train_x = train_x.values
-        self.train_y = train_y.values
+        self.train_x = train_x.values if isinstance(train_x, pd.DataFrame) else train_x
+        self.train_y = train_y.values if isinstance(train_y, pd.DataFrame) else train_y
         self.scale_approach = scale_approach
         if scale_approach:
             temp_x, self.scale_arrays, self.scale_approach = \
@@ -40,9 +40,14 @@ class LinearRegression:
                 gr = GradientDescent(self, random_seed=self.random_seed)
             gr.descent(x_matrix=temp_x, y_matrix=self.train_y)
 
-    def predict(self, x_vector):
-        return linear_predict(x_vector, self.params, scale_approach=self.scale_approach,
-                              prior_scale_arrays=self.scale_arrays)
+    def predict(self, x_matrix, scale=True, custom_params=None):
+        predict_params = custom_params if custom_params is not None else self.params
+        if scale:
+            pred = linear_predict(x_matrix, predict_params, scale_approach=self.scale_approach,
+                                  prior_scale_arrays=self.scale_arrays)
+        else:
+            pred = linear_predict(x_matrix, predict_params)
+        return pred
 
     # obtain linear regression parameters through normal equations (closed-form), a.k.a. OLS
     # https://www.geeksforgeeks.org/ml-normal-equation-in-linear-regression/
@@ -58,8 +63,9 @@ class LinearRegression:
             x_matrix = scale_matrix(self.scale_approach, x_matrix,
                                     prior_scale_arrays=self.scale_arrays, return_scale_arrays=False)
         scaled_x_matrix_w_bias = check_bias_column(x_matrix)
-        return (1/(2*scaled_x_matrix_w_bias.shape[0])) * \
+        cost = (1/(2*scaled_x_matrix_w_bias.shape[0])) * \
                np.sum(np.square(np.subtract(np.dot(scaled_x_matrix_w_bias, params), y_matrix)), axis=0)
+        return cost
 
 
 class SimpleLinear:
@@ -129,15 +135,15 @@ if __name__ == '__main__':
     features = ['LSTAT', 'RM']
     target = boston['MEDV']
     X = pd.DataFrame(np.c_[boston['LSTAT'], boston['RM']], columns=['LSTAT', 'RM'])
-    Y = boston['MEDV']
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=RANDOM_SEED)
+    y = boston['MEDV']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_SEED)
     # current module lr class
     lr = LinearRegression(random_seed=RANDOM_SEED)
-    lr.fit(X_train, Y_train, scale_approach='l2_norm', method='gradient')
+    lr.fit(X_train, y_train, scale_approach='l2_norm', method='gradient')
     lr_pred = lr.predict(X_test)
     # sklearn lr class
     sk_lr = linear_model.LinearRegression(fit_intercept=True, normalize=True)
-    sk_lr.fit(X_train, Y_train)
+    sk_lr.fit(X_train, y_train)
     sk_pred = sk_lr.predict(X_test)
 
     print('hellO!')

@@ -40,7 +40,7 @@ class GradientDescent:
                 x_batch = x_matrix[curr_batch_index: curr_batch_index + self.batch_size]
                 y_batch = y_matrix[curr_batch_index: curr_batch_index + self.batch_size]
                 curr_batch_index += self.batch_size
-            batch_pred = np.dot(x_batch, self.model.params)
+            batch_pred = self.model.predict(x_batch, scale=False)
             batch_error = np.subtract(batch_pred, y_batch)
             update_vector = np.multiply((self.learning_rate / self.batch_size),
                                         np.dot(x_batch.T, batch_error))

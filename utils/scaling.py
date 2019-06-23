@@ -7,9 +7,9 @@ from utils.formulae import l2_norm
 
 def scale_matrix(approach, matrix, prior_scale_arrays=None, return_scale_arrays=False):
     if approach == 'mean':
-        output_matrix, scale_arrays = mean_normalise(matrix, prior_minmax=prior_scale_arrays, return_minmax=True)
+        output_matrix, scale_arrays = mean_normalise(matrix, prior_mean_std=prior_scale_arrays, return_mean_std=True)
     elif approach == 'minmax':
-        output_matrix, scale_arrays = minmax_scale(matrix, prior_mean_std=prior_scale_arrays, return_mean_std=True)
+        output_matrix, scale_arrays = minmax_scale(matrix, prior_minmax=prior_scale_arrays, return_minmax=True)
     elif approach == 'l2_norm':
         output_matrix, scale_arrays = l2_normalise(matrix, prior_normalise=prior_scale_arrays,
                                                    return_normalise_params=True)
@@ -20,7 +20,7 @@ def scale_matrix(approach, matrix, prior_scale_arrays=None, return_scale_arrays=
     return output_matrix
 
 
-def mean_normalise(matrix, prior_minmax=None, return_minmax=True):
+def minmax_scale(matrix, prior_minmax=None, return_minmax=True):
     if prior_minmax:
         min_array = prior_minmax[0]
         max_array = prior_minmax[1]
@@ -33,7 +33,7 @@ def mean_normalise(matrix, prior_minmax=None, return_minmax=True):
     return np.divide(np.subtract(matrix, min_array), np.subtract(max_array, min_array))
 
 
-def minmax_scale(matrix, prior_mean_std=None, return_mean_std=True):
+def mean_normalise(matrix, prior_mean_std=None, return_mean_std=True):
     if prior_mean_std:
         mean_array = prior_mean_std[0]
         std_array = prior_mean_std[1]
