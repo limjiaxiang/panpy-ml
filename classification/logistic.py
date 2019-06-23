@@ -10,16 +10,19 @@ from regression.optimisation import GradientDescent
 class LogisticRegression:
 
     # multi-class compatible logistic regression (ovr and cross-entropy loss [multinomial])
-    def __init__(self, Lasso=False, Ridge=False, l1_ratio=None, random_seed=None):
+    def __init__(self, Lasso=False, Ridge=False, l1_ratio=None, random_seed=None, decision_boundary=0.5,
+                 multi_type='ovr'):
         self.train_x = None
         self.train_y = None
-        self.params = None
         self.scale_arrays = None
         self.scale_approach = None
+        self.decision_boundary = decision_boundary
         self.random_seed = random_seed
+        self.params = None
+        self.multi_type = multi_type
+        self.is_multi = False
 
-    def fit(self, train_x, train_y, scale_approach=None, gradient_args=None, decision_boundary=0.5):
-        # TODO implement fit
+    def fit(self, train_x, train_y, scale_approach=None, gradient_args=None):
         self.train_x = train_x.values if isinstance(train_x, pd.DataFrame) else train_x
         self.train_y = train_y.values if isinstance(train_y, pd.DataFrame) else train_y
         self.scale_approach = scale_approach
@@ -29,13 +32,20 @@ class LogisticRegression:
         else:
             temp_x = self.train_x
         temp_x = check_bias_column(temp_x)
-        if gradient_args:
-            gr = GradientDescent(self, random_seed=self.random_seed, **gradient_args)
-        else:
-            gr = GradientDescent(self, random_seed=self.random_seed)
+        if len(np.unique(self.train_y)) > 2:
+            self.is_multi = True
+            self.params = {}
+            # TODO: implement fit for ovr and multinomial
+            if self.multi_type == 'ovr':
+                pass
+            elif self.multi_type == 'multinomial':
+                pass
+        gr = (GradientDescent(self, random_seed=self.random_seed, **gradient_args) if gradient_args
+              else GradientDescent(self, random_seed=self.random_seed))
         gr.descent(x_matrix=temp_x, y_matrix=self.train_y)
 
     def predict(self, x_matrix, scale=True, custom_params=None, binary=False):
+        # TODO: implement predict for multiclass options
         predict_params = custom_params if custom_params is not None else self.params
         if scale:
             logit = linear_predict(x_matrix, predict_params, scale_approach=self.scale_approach,
@@ -44,7 +54,7 @@ class LogisticRegression:
             logit = linear_predict(x_matrix, predict_params)
         output = sigmoid(logit)
         if binary:
-            output = np.where(output >= 0.5, 1, 0)
+            output = np.where(output >= self.decision_boundary, 1, 0)
         return output
 
     def cost_function(self, params, x_matrix, y_matrix, scale_x=True):
@@ -58,10 +68,15 @@ class LogisticRegression:
         cost = (-1/y_matrix.shape[0]) * np.sum(sum_comps)
         return cost
 
+    def ovr(self):
+        pass
+
+    def multinomial(self):
+        pass
+
 
 if __name__ == '__main__':
     RANDOM_SEED = 15
-    # TODO validate log reg model
     # Iris dataset
     from sklearn.model_selection import train_test_split
     from sklearn import linear_model
