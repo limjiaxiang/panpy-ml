@@ -34,42 +34,77 @@ class LogisticRegression:
         temp_x = check_bias_column(temp_x)
         if len(np.unique(self.train_y)) > 2:
             self.is_multi = True
-            self.params = {}
-            # TODO: implement fit for ovr and multinomial
+            self.params = {y_label: None for y_label in np.unique(self.train_y)}
             if self.multi_type == 'ovr':
-                pass
+                self.ovr(temp_x, gradient_args)
             elif self.multi_type == 'multinomial':
+                # TODO: implement fit for multinomial
                 pass
-        gr = (GradientDescent(self, random_seed=self.random_seed, **gradient_args) if gradient_args
-              else GradientDescent(self, random_seed=self.random_seed))
-        gr.descent(x_matrix=temp_x, y_matrix=self.train_y)
+        else:
+            gr = (GradientDescent(self, random_seed=self.random_seed, **gradient_args) if gradient_args
+                  else GradientDescent(self, random_seed=self.random_seed))
+            self.params = gr.descent(x_matrix=temp_x, y_matrix=self.train_y)
 
-    def predict(self, x_matrix, scale=True, custom_params=None, binary=False):
-        # TODO: implement predict for multiclass options
-        predict_params = custom_params if custom_params is not None else self.params
+    def predict(self, x_matrix, scale=True, custom_params=None, binary=False, train=False):
+        output = None
+        if self.is_multi and not train:
+            if self.multi_type == 'ovr':
+                index_label_mapping = {index: y_label for index, y_label in enumerate(np.unique(self.train_y))}
+                pred_matrix = np.empty((x_matrix.shape[0], len(index_label_mapping)))
+                for index, y_label in index_label_mapping.items():
+                    y_label_params = self.params[y_label]
+                    y_label_output = self._logit_predict(x_matrix, y_label_params, scale,
+                                                         scale_approach=self.scale_approach,
+                                                         prior_scale_arrays=self.scale_arrays)
+                    pred_matrix[:, index] = y_label_output
+                pred_vector_index = np.argmax(pred_matrix, axis=1)
+                pred_vector_labels = np.array(list(map(lambda index: index_label_mapping[index], pred_vector_index)))
+                output = pred_vector_labels
+            elif self.multi_type == 'multinomial':
+                # TODO: implement predict for multinomial
+                pass
+            else:
+                print('multi_type not specified')
+        else:
+            predict_params = custom_params if custom_params is not None else self.params
+            output = self._logit_predict(x_matrix, predict_params, scale,
+                                         scale_approach=self.scale_approach, prior_scale_arrays=self.scale_arrays)
+            if binary:
+                output = np.where(output >= self.decision_boundary, 1, 0)
+        return output
+
+    def _logit_predict(self, x_matrix, predict_params, scale, scale_approach, prior_scale_arrays):
         if scale:
-            logit = linear_predict(x_matrix, predict_params, scale_approach=self.scale_approach,
-                                   prior_scale_arrays=self.scale_arrays)
+            logit = linear_predict(x_matrix, predict_params,
+                                   scale_approach=scale_approach, prior_scale_arrays=prior_scale_arrays)
         else:
             logit = linear_predict(x_matrix, predict_params)
         output = sigmoid(logit)
-        if binary:
-            output = np.where(output >= self.decision_boundary, 1, 0)
         return output
 
-    def cost_function(self, params, x_matrix, y_matrix, scale_x=True):
+    def cost_function(self, params, x_matrix, y_matrix, scale_x=True, train=True):
         if scale_x:
             x_matrix = scale_matrix(self.scale_approach, x_matrix,
                                     prior_scale_arrays=self.scale_arrays, return_scale_arrays=False)
-        hypo = self.predict(x_matrix, scale=False, custom_params=params)
+        hypo = self.predict(x_matrix, scale=False, custom_params=params, train=train)
         y_comp = np.multiply(y_matrix, np.log(hypo))
         y_minus_comp = np.multiply(np.subtract(1, y_matrix), np.log(np.subtract(1, hypo)))
         sum_comps = y_comp + y_minus_comp
-        cost = (-1/y_matrix.shape[0]) * np.sum(sum_comps)
+        cost = (-1 / y_matrix.shape[0]) * np.sum(sum_comps)
         return cost
 
-    def ovr(self):
-        pass
+    def ovr(self, scaled_x_matrix, gradient_args):
+        for y_label in self.params.keys():
+            curr_train_y = self._ovr_binarise_y_labels(self.train_y, y_label)
+            ovr_gr = (GradientDescent(self, random_seed=self.random_seed, **gradient_args) if gradient_args
+                      else GradientDescent(self, random_seed=self.random_seed))
+            self.params[y_label] = ovr_gr.descent(x_matrix=scaled_x_matrix, y_matrix=curr_train_y)
+
+    @staticmethod
+    def _ovr_binarise_y_labels(y_labels, main_label):
+        y_label_binary = y_labels.copy()
+        y_label_binary[y_label_binary != main_label] = 0
+        return y_label_binary
 
     def multinomial(self):
         pass
@@ -82,14 +117,17 @@ if __name__ == '__main__':
     from sklearn import linear_model
     from sklearn.datasets import load_iris
     from sklearn.preprocessing import StandardScaler
+
     iris = load_iris()
-    X = iris.data[:100, :2]
-    y = iris.target[:100]
+    # X = iris.data[:100, :2]
+    # y = iris.target[:100]
+    X = iris.data
+    y = iris.target
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_SEED)
 
     # this module's log reg class
     lr = LogisticRegression(random_seed=RANDOM_SEED)
-    lr.fit(X_train, y_train, scale_approach='mean')
+    lr.fit(X_train, y_train, scale_approach='mean', gradient_args={'max_epochs': 10000})
     lr_pred = lr.predict(X_test, binary=True)
 
     # sklearn log reg class

@@ -38,9 +38,9 @@ class LinearRegression:
                 gr = GradientDescent(self, random_seed=self.random_seed, **gradient_args)
             else:
                 gr = GradientDescent(self, random_seed=self.random_seed)
-            gr.descent(x_matrix=temp_x, y_matrix=self.train_y)
+            self.params = gr.descent(x_matrix=temp_x, y_matrix=self.train_y)
 
-    def predict(self, x_matrix, scale=True, custom_params=None):
+    def predict(self, x_matrix, scale=True, custom_params=None, **kwargs):
         predict_params = custom_params if custom_params is not None else self.params
         if scale:
             pred = linear_predict(x_matrix, predict_params, scale_approach=self.scale_approach,
@@ -58,7 +58,7 @@ class LinearRegression:
         self.params = np.dot(x_squared_inverse, x_y_product)
         print('Parameters obtained obtained from normal equation')
 
-    def cost_function(self, params, x_matrix, y_matrix, scale_x=True):
+    def cost_function(self, params, x_matrix, y_matrix, scale_x=True, **kwargs):
         if scale_x:
             x_matrix = scale_matrix(self.scale_approach, x_matrix,
                                     prior_scale_arrays=self.scale_arrays, return_scale_arrays=False)
