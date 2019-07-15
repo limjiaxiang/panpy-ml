@@ -10,13 +10,18 @@ from regression.optimisation import GradientDescent
 # Multivariate Linear Regression
 class LinearRegression:
 
-    def __init__(self, Lasso=False, Ridge=False, l1_ratio=None, random_seed=None):
+    def __init__(self, lasso_lambda=0.0, ridge_lambda=0.0, l1_ratio=0.5, random_seed=None):
         self.train_x = None
         self.train_y = None
         self.params = None
         self.scale_arrays = None
         self.scale_approach = None
         self.random_seed = random_seed
+        self.lambdas = {
+            'lasso': lasso_lambda,
+            'ridge': ridge_lambda
+        }
+        self.l1_ratio = l1_ratio
 
     # multivariate linear regression
     # obtain parameters for model (thetas)
@@ -65,6 +70,13 @@ class LinearRegression:
         scaled_x_matrix_w_bias = check_bias_column(x_matrix)
         cost = (1/(2*scaled_x_matrix_w_bias.shape[0])) * \
                np.sum(np.square(np.subtract(np.dot(scaled_x_matrix_w_bias, params), y_matrix)), axis=0)
+        params_wo_intercept = params[1:]
+        lasso_cost = self.lambdas['lasso'] * np.sum(np.abs(params_wo_intercept))
+        ridge_cost = self.lambdas['ridge'] * np.sum(np.square(params_wo_intercept))
+        if self.lambdas['lasso'] > 0.0 and self.lambdas['ridge'] > 0.0:
+            lasso_cost *= self.l1_ratio
+            ridge_cost *= (1 - self.l1_ratio)
+        cost += lasso_cost + ridge_cost
         return cost
 
 
@@ -137,10 +149,27 @@ if __name__ == '__main__':
     X = pd.DataFrame(np.c_[boston['LSTAT'], boston['RM']], columns=['LSTAT', 'RM'])
     y = boston['MEDV']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_SEED)
+
     # current module lr class
     lr = LinearRegression(random_seed=RANDOM_SEED)
     lr.fit(X_train, y_train, scale_approach='l2_norm', method='gradient')
     lr_pred = lr.predict(X_test)
+
+    # current module lr class with lasso reg
+    lr_lasso = LinearRegression(lasso_lambda=10, random_seed=RANDOM_SEED)
+    lr_lasso.fit(X_train, y_train, scale_approach='l2_norm', method='gradient')
+    lr_lasso_pred = lr_lasso.predict(X_test)
+
+    # current module lr class with ridge reg
+    lr_ridge = LinearRegression(ridge_lambda=10, random_seed=RANDOM_SEED)
+    lr_ridge.fit(X_train, y_train, scale_approach='l2_norm', method='gradient')
+    lr_ridge_pred = lr_ridge.predict(X_test)
+
+    # current module lr class with elastic reg
+    lr_elastic = LinearRegression(lasso_lambda=10, ridge_lambda=10, l1_ratio=0.5, random_seed=RANDOM_SEED)
+    lr_elastic.fit(X_train, y_train, scale_approach='l2_norm', method='gradient')
+    lr_elastic_pred = lr_elastic.predict(X_test)
+
     # sklearn lr class
     sk_lr = linear_model.LinearRegression(fit_intercept=True, normalize=True)
     sk_lr.fit(X_train, y_train)

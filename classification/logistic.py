@@ -9,8 +9,8 @@ from regression.optimisation import GradientDescent
 
 class LogisticRegression:
 
-    # multi-class compatible logistic regression (ovr)
-    def __init__(self, Lasso=False, Ridge=False, l1_ratio=None, random_seed=None, decision_boundary=0.5,
+    # multi-class compatible logistic regression (ovr and cross-entropy loss [multinomial])
+    def __init__(self, lasso_lambda=0.0, ridge_lambda=0.0, l1_ratio=0.5, random_seed=None, decision_boundary=0.5,
                  multi_type='ovr'):
         self.train_x = None
         self.train_y = None
@@ -21,6 +21,11 @@ class LogisticRegression:
         self.params = None
         self.multi_type = multi_type
         self.is_multi = False
+        self.lambdas = {
+            'lasso': lasso_lambda,
+            'ridge': ridge_lambda
+        }
+        self.l1_ratio = l1_ratio
 
     def fit(self, train_x, train_y, scale_approach=None, gradient_args=None):
         self.train_x = train_x.values if isinstance(train_x, pd.DataFrame) else train_x
@@ -85,6 +90,14 @@ class LogisticRegression:
         y_minus_comp = np.multiply(np.subtract(1, y_matrix), np.log(np.subtract(1, preds)))
         sum_comps = y_comp + y_minus_comp
         cost = (-1 / y_matrix.shape[0]) * np.sum(sum_comps)
+        # add lasso and ridge regularisation, lambda 0 implies no regularisation terms
+        params_wo_intercept = params[1:]
+        lasso_cost = self.lambdas['lasso'] * np.sum(np.abs(params_wo_intercept))
+        ridge_cost = self.lambdas['ridge'] * np.sum(np.square(params_wo_intercept))
+        if self.lambdas['lasso'] > 0.0 and self.lambdas['ridge'] > 0.0:
+            lasso_cost *= self.l1_ratio
+            ridge_cost *= (1 - self.l1_ratio)
+        cost += lasso_cost + ridge_cost
         return cost
 
     def ovr(self, scaled_x_matrix, gradient_args):
@@ -118,8 +131,23 @@ if __name__ == '__main__':
 
     # this module's log reg class
     lr = LogisticRegression(random_seed=RANDOM_SEED)
-    lr.fit(X_train, y_train, scale_approach='mean', gradient_args={'max_epochs': 10000})
+    lr.fit(X_train, y_train, scale_approach='mean', gradient_args={'max_epochs': 1000})
     lr_pred = lr.predict(X_test, binary=True)
+
+    # this module's log reg class with lasso reg
+    lr_lasso = LogisticRegression(lasso_lambda=0.5, random_seed=RANDOM_SEED)
+    lr_lasso.fit(X_train, y_train, scale_approach='mean', gradient_args={'max_epochs': 1000})
+    lr_lasso_pred = lr_lasso.predict(X_test, binary=True)
+
+    # this module's log reg class with ridge reg
+    lr_ridge = LogisticRegression(ridge_lambda=0.5, random_seed=RANDOM_SEED)
+    lr_ridge.fit(X_train, y_train, scale_approach='mean', gradient_args={'max_epochs': 1000})
+    lr_ridge_pred = lr_ridge.predict(X_test, binary=True)
+
+    # this module's log reg class with elastic net
+    lr_elastic = LogisticRegression(lasso_lambda=0.5, ridge_lambda=0.5, l1_ratio=0.5, random_seed=RANDOM_SEED)
+    lr_elastic.fit(X_train, y_train, scale_approach='mean', gradient_args={'max_epochs': 1000})
+    lr_elastic_pred = lr_elastic.predict(X_test, binary=True)
 
     # sklearn log reg class
     sk_lr = linear_model.LogisticRegression(penalty='none', random_state=RANDOM_SEED, solver='saga',
