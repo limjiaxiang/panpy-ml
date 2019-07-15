@@ -39,3 +39,9 @@ def l2_norm(vector):
 # sigmoid / logistic function
 def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-x))
+
+
+# softmax function (returns probability of a class)
+# input is most commonly product of parameters (theta) and variables (values)
+def softmax(x):
+    return np.exp(x)/np.sum(np.exp(x), axis=0)

@@ -44,7 +44,6 @@ class GradientDescent:
             batch_error = np.subtract(batch_pred, y_batch)
             update_vector = np.multiply((self.learning_rate / self.batch_size),
                                         np.dot(x_batch.T, batch_error))
-
             # check if cost function is converging
             new_params = curr_params - update_vector
             new_params_cost = self._calculate_cost(new_params, x_matrix=x_matrix, y_matrix=y_matrix, scale_x=False,

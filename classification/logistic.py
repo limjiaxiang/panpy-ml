@@ -9,7 +9,7 @@ from regression.optimisation import GradientDescent
 
 class LogisticRegression:
 
-    # multi-class compatible logistic regression (ovr and cross-entropy loss [multinomial])
+    # multi-class compatible logistic regression (ovr)
     def __init__(self, Lasso=False, Ridge=False, l1_ratio=None, random_seed=None, decision_boundary=0.5,
                  multi_type='ovr'):
         self.train_x = None
@@ -32,14 +32,11 @@ class LogisticRegression:
         else:
             temp_x = self.train_x
         temp_x = check_bias_column(temp_x)
-        if len(np.unique(self.train_y)) > 2:
+        if np.unique(self.train_y).shape[0] > 2:
             self.is_multi = True
             self.params = {y_label: None for y_label in np.unique(self.train_y)}
             if self.multi_type == 'ovr':
                 self.ovr(temp_x, gradient_args)
-            elif self.multi_type == 'multinomial':
-                # TODO: implement fit for multinomial
-                pass
         else:
             gr = (GradientDescent(self, random_seed=self.random_seed, **gradient_args) if gradient_args
                   else GradientDescent(self, random_seed=self.random_seed))
@@ -60,9 +57,6 @@ class LogisticRegression:
                 pred_vector_index = np.argmax(pred_matrix, axis=1)
                 pred_vector_labels = np.array(list(map(lambda index: index_label_mapping[index], pred_vector_index)))
                 output = pred_vector_labels
-            elif self.multi_type == 'multinomial':
-                # TODO: implement predict for multinomial
-                pass
             else:
                 print('multi_type not specified')
         else:
@@ -86,9 +80,9 @@ class LogisticRegression:
         if scale_x:
             x_matrix = scale_matrix(self.scale_approach, x_matrix,
                                     prior_scale_arrays=self.scale_arrays, return_scale_arrays=False)
-        hypo = self.predict(x_matrix, scale=False, custom_params=params, train=train)
-        y_comp = np.multiply(y_matrix, np.log(hypo))
-        y_minus_comp = np.multiply(np.subtract(1, y_matrix), np.log(np.subtract(1, hypo)))
+        preds = self.predict(x_matrix, scale=False, custom_params=params, train=train)
+        y_comp = np.multiply(y_matrix, np.log(preds))
+        y_minus_comp = np.multiply(np.subtract(1, y_matrix), np.log(np.subtract(1, preds)))
         sum_comps = y_comp + y_minus_comp
         cost = (-1 / y_matrix.shape[0]) * np.sum(sum_comps)
         return cost
@@ -105,9 +99,6 @@ class LogisticRegression:
         y_label_binary = y_labels.copy()
         y_label_binary[y_label_binary != main_label] = 0
         return y_label_binary
-
-    def multinomial(self):
-        pass
 
 
 if __name__ == '__main__':
