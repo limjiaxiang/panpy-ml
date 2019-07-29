@@ -1,4 +1,7 @@
 # Classification models, implementation using NumPy and Pandas
 
-Mathematical intuition for Logistic Regression:
-![](../assets/log_reg1.jpg)
+## Table of Contents:
+1. [Logistic Regression](#mathematical-intuition-for-logistic-regression)
+
+## Mathematical intuition for Logistic Regression:
+![](../assets/classification/log_reg1.jpg)
