@@ -5,3 +5,4 @@
 
 ## Mathematical intuition for Logistic Regression:
 ![](../assets/classification/log_reg1.jpg)
+![](../assets/classification/log_reg2.jpg)
