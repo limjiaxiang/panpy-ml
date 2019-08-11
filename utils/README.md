@@ -5,6 +5,7 @@
 2. [Confusion matrix metrics](#mathematical-intuition-for-confusion-matrix-metrics)
 3. [Basic univariate statistics](#mathematical-intuition-for-basic-univariate-statistics)
 4. [Basic bivariate statistics](#mathematical-intuition-for-basic-bivariate-statistics)
+5. [Basic probability statistics](#mathematical-intuition-for-basic-probability-statistics)
 
 ## Mathematical intuition for regularisations:
 ![](../assets/utils/reg.jpg)
