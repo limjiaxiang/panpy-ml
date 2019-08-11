@@ -12,3 +12,5 @@ Machine learning algorithms implemented from scratch using pandas and numpy.
 [Mathematical intuition for basic univariate statistics](utils/README.md#mathematical-intuition-for-basic-univariate-statistics)
 
 [Mathematical intuition for basic bivariate statistics](utils/README.md#mathematical-intuition-for-basic-bivariate-statistics)
+
+[Mathematical intuition for basic probability statistics](utils/README.md#mathematical-intuition-for-basic-probability-statistics)

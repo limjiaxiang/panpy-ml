@@ -17,3 +17,6 @@
 
 ## Mathematical intuition for basic bivariate statistics:
 ![](../assets/utils/bivariate_basics.jpg)
+
+## Mathematical intuition for basic probability statistics:
+![](../assets/utils/probability_basics.jpg)
