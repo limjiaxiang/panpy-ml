@@ -8,6 +8,6 @@
 ![](../assets/classification/log_reg1.jpg)
 ![](../assets/classification/log_reg2.jpg)
 
-## Mathematical intuition for Naive Bayes
+## Mathematical intuition for Naive Bayes:
 ![](../assets/classification/naive_1.jpg)
 ![](../assets/classification/naive_2.jpg)
