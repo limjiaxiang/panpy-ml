@@ -9,6 +9,8 @@ Machine learning algorithms implemented from scratch using pandas and numpy.
 
 [Mathematical intuition for neural network algorithms](neural_network/README.md)
 
+[Mathematical intuition for dimensionality reduction algorithms](dimensionality_reduction/README.md)
+
 [Mathematical intuition for regularisations](utils/README.md#mathematical-intuition-for-regularisations)
 
 [Mathematical intuition for confusion matrix metrics](utils/README.md#mathematical-intuition-for-confusion-matrix-metrics)
