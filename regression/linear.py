@@ -7,7 +7,7 @@ from utils.formulae import pearson_correlation
 from regression.optimisation import GradientDescent
 
 
-# Multivariate Linear Regression
+# Multiple Linear Regression
 class LinearRegression:
 
     def __init__(self, lasso_lambda=0.0, ridge_lambda=0.0, l1_ratio=0.5, random_seed=None):
@@ -23,7 +23,7 @@ class LinearRegression:
         }
         self.l1_ratio = l1_ratio
 
-    # multivariate linear regression
+    # multiple linear regression
     # obtain parameters for model (thetas)
     def fit(self, train_x, train_y, scale_approach=None, method='gradient', gradient_args=None):
         self.train_x = train_x.values if isinstance(train_x, pd.DataFrame) else train_x

@@ -1,9 +1,12 @@
 # Tree-based models, implementation using NumPy and Pandas
 
-## Table of Contents:
-1. [Decision Trees](#mathematical-intuition-for-decision-trees)
-2. [Random Forest](#mathematical-intuition-for-random-forest)
-3. [Adaboost Forest](#mathematical-intuition-for-adaboost-forest)
+| Algorithm                 | Mathematical Intuition     | Code Implementation |
+| ------------------------- | -------------------------- | ------------------- |
+| Decision Trees    | [Link](#mathematical-intuition-for-decision-trees)    |
+| Random Forest     | [Link](#mathematical-intuition-for-random-forest)     |
+| Adaboost Forest   | [Link](#mathematical-intuition-for-adaboost-forest)   |
+
+---
 
 ## Mathematical intuition for Decision Trees:
 ![](../assets/trees/decision_tree_1.jpg)
