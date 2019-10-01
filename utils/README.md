@@ -1,14 +1,10 @@
 # Formulae, etc. implementation using NumPy and Pandas
 
 ## Table of Contents:
-1. [Regularisations](#mathematical-intuition-for-regularisations)
-2. [Confusion matrix metrics](#mathematical-intuition-for-confusion-matrix-metrics)
-3. [Basic univariate statistics](#mathematical-intuition-for-basic-univariate-statistics)
-4. [Basic bivariate statistics](#mathematical-intuition-for-basic-bivariate-statistics)
-5. [Basic probability statistics](#mathematical-intuition-for-basic-probability-statistics)
-
-## Mathematical intuition for regularisations:
-![](../assets/utils/reg.jpg)
+1. [Confusion matrix metrics](#mathematical-intuition-for-confusion-matrix-metrics)
+2. [Basic univariate statistics](#mathematical-intuition-for-basic-univariate-statistics)
+3. [Basic bivariate statistics](#mathematical-intuition-for-basic-bivariate-statistics)
+4. [Basic probability statistics](#mathematical-intuition-for-basic-probability-statistics)
 
 ## Mathematical intuition for confusion matrix metrics:
 ![](../assets/utils/confusion_metrics.jpg)

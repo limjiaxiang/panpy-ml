@@ -1,6 +1,18 @@
 # panpy-ml
 Machine learning algorithms implemented from scratch using pandas and numpy. 
 
+| Topic                     | Sub-repository Link        | 
+| ------------------------- | -------------------------- | 
+| Regression                | [Regress here](regression)
+| Classification            | [Classify this](classification)
+| Tree-Based                | [Grow trees](trees)
+| Neural Networks           | [Forward and backward](neural_network)
+| Dimensionality Reduction  | [From 100D to 10D](dimensionality_reduction)
+| Regularisation            | [Make it less complex](regularisation)
+| Statistics                | [Pre-hype data science](utils)
+
+
+
 [Mathematical intuition for regression algorithms](regression/README.md)
 
 [Mathematical intuition for classification algorithms](classification/README.md)
