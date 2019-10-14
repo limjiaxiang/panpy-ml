@@ -13,9 +13,6 @@
   <p align="center">
     Machine learning algorithms mathematical intuitions and code implementations using Pandas and NumPy.
     <br />
-    <a href="https://github.com/limjiaxiang/panpy-ml/README.md"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
     <a href="https://github.com/limjiaxiang/panpy-ml/issues">Report Bug</a>
     ·
     <a href="https://github.com/limjiaxiang/panpy-ml/issues">Request Feature</a>
