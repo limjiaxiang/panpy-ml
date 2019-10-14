@@ -9,7 +9,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/limjiaxiang/panpy-ml">
-    <img src="assets/brain_header.png" alt="Logo" width="640" height="360">
+    <img src="assets/brain_header.png" alt="Logo" width="480" height="270">
   </a>
   
   <h3 align="center">PanPy-ML</h3>
