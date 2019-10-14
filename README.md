@@ -95,6 +95,6 @@ Project Link: [https://github.com/limjiaxiang/panpy-ml](https://github.com/limji
 [issues-shield]: https://img.shields.io/github/issues/limjiaxiang/panpy-ml.svg?style=flat-square
 [issues-url]: https://github.com/limjiaxiang/panpy-ml/issues
 [license-shield]: https://img.shields.io/github/license/limjiaxiang/panpy-ml.svg?style=flat-square
-[license-url]: https://github.com/limjiaxiang/panpy-ml/blob/master/LICENSE.txt
+[license-url]: https://github.com/limjiaxiang/panpy-ml/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/limjiaxiang
