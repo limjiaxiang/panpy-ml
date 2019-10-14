@@ -8,10 +8,6 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
-
   <h3 align="center">PanPy-ML</h3>
 
   <p align="center">
@@ -46,6 +42,7 @@ This project is focused on the mathematical understanding of machine learning al
 
 The table below shows the corresponding branches of machine learning algorithms and their respective sub-repositories links which contains more details about the math and implementation.
 
+<center>
 | Topic                     | Sub-repository Link        | 
 | ------------------------- | -------------------------- | 
 | Regression                | [Regress here](regression)
@@ -55,7 +52,7 @@ The table below shows the corresponding branches of machine learning algorithms 
 | Dimensionality Reduction  | [From 100D to 10D](dimensionality_reduction)
 | Regularisation            | [Make it less complex](regularisation)
 | Statistics                | [Pre-hype data science](utils)
-
+</center>
 
 
 ### Built With
