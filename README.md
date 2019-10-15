@@ -65,7 +65,7 @@ The table below shows the corresponding branches of machine learning algorithms 
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE) file for more information.
 
 
 
