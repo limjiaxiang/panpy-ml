@@ -72,7 +72,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [Lim Jia Xiang](https://linkedin.com/in/limjiaxiang) - blakelimjiaxiang@gmail.com
+[Lim Jia Xiang](https://linkedin.com/in/limjiaxiang) - blakelimjiaxiang@gmail.com
 
 Project Link: [https://github.com/limjiaxiang/panpy-ml](https://github.com/limjiaxiang/panpy-ml)
 
